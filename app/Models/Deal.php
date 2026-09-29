@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+use App\Enums\DealStage;
 class Deal extends Model
 {
     use HasFactory;
@@ -31,6 +31,7 @@ class Deal extends Model
     protected function casts(): array
     {
         return [
+            'stage' => DealStage::class,
             'value' => 'decimal:2',
             'probability' => 'integer',
             'expected_close_date' => 'date',

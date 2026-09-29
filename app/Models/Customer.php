@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CustomerStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,13 @@ class Customer extends Model
         'notes',
         'created_by',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => CustomerStatus::class,
+        ];
+    }
 
     public function organization(): BelongsTo
     {

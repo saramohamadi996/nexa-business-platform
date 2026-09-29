@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\LeadPriority;
+use App\Enums\LeadStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +33,8 @@ class Lead extends Model
     protected function casts(): array
     {
         return [
+            'status' => LeadStatus::class,
+            'priority' => LeadPriority::class,
             'estimated_value' => 'decimal:2',
             'converted_at' => 'datetime',
         ];
