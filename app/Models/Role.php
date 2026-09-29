@@ -22,9 +22,13 @@ class Role extends Model
         return $this->belongsTo(Organization::class);
     }
 
-    public function permissions(): BelongsToMany
+    public function permissions()
     {
-        return $this->belongsToMany(Permission::class)
-            ->withTimestamps();
+        return $this->belongsToMany(
+            Permission::class,
+            'role_permission',
+            'role_id',
+            'permission_id'
+        );
     }
 }
