@@ -3,22 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrganizationController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $organizations = $request->user()
             ->organizations()
             ->withPivot('role_id', 'joined_at')
             ->get();
-
-        return response()->json([
-            'data' => $organizations,
-        ]);
+        return OrganizationResource::collection($organizations);
     }
 
     public function show(Request $request, Organization $organization): JsonResponse
@@ -36,10 +35,7 @@ class OrganizationController extends Controller
             'users',
             'roles',
         ]);
-
-        return response()->json([
-            'data' => $organization,
-        ]);
+        return OrganizationResource::make($organization);
     }
 
     public function store(Request $request): JsonResponse
@@ -59,10 +55,11 @@ class OrganizationController extends Controller
             'timezone' => $validated['timezone'] ?? 'UTC',
             'currency' => $validated['currency'] ?? 'USD',
         ]);
-
-        return response()->json([
-            'message' => 'Organization created successfully.',
-            'data' => $organization,
-        ], 201);
+        return OrganizationResource::make($organization)
+            ->additional([
+                'message' => 'Organization created successfully.',
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 }

@@ -6,19 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\CustomerResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $customers = $request->user()
             ->customers()
             ->latest()
             ->get();
 
-        return response()->json([
-            'data' => $customers,
-        ]);
+        return CustomerResource::collection($customers);
     }
 
     public function store(Request $request): JsonResponse
@@ -47,10 +47,12 @@ class CustomerController extends Controller
             'created_by' => $request->user()->id,
         ]);
 
-        return response()->json([
-            'message' => 'Customer created successfully.',
-            'data' => $customer,
-        ], 201);
+        return CustomerResource::make($customer)
+            ->additional([
+                'message' => 'Customer created successfully.',
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Customer $customer): JsonResponse
@@ -61,9 +63,7 @@ class CustomerController extends Controller
             'You do not have access to this customer.'
         );
 
-        return response()->json([
-            'data' => $customer,
-        ]);
+        return CustomerResource::make($customer);
     }
 
     public function update(Request $request, Customer $customer): JsonResponse
@@ -88,10 +88,10 @@ class CustomerController extends Controller
 
         $customer->update($validated);
 
-        return response()->json([
-            'message' => 'Customer updated successfully.',
-            'data' => $customer->fresh(),
-        ]);
+        return CustomerResource::make($customer->fresh())
+            ->additional([
+                'message' => 'Customer updated successfully.',
+            ]);
     }
 
     public function destroy(Request $request, Customer $customer): JsonResponse

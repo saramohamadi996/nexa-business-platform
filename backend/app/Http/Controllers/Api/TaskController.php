@@ -8,9 +8,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 class TaskController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $tasks = Task::whereIn(
             'organization_id',
@@ -18,10 +21,7 @@ class TaskController extends Controller
         )
             ->latest()
             ->get();
-
-        return response()->json([
-            'data' => $tasks,
-        ]);
+        return TaskResource::collection($tasks);
     }
 
     public function store(StoreTaskRequest $request): JsonResponse
@@ -41,11 +41,12 @@ class TaskController extends Controller
             ...$validated,
             'created_by' => $request->user()->id,
         ]);
-
-        return response()->json([
-            'message' => 'Task created successfully.',
-            'data' => $task,
-        ], 201);
+        return TaskResource::make($task)
+            ->additional([
+                'message' => 'Task created successfully.',
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
     public function show(Request $request, Task $task): JsonResponse
     {
@@ -57,10 +58,7 @@ class TaskController extends Controller
             403,
             'You do not have access to this task.'
         );
-
-        return response()->json([
-            'data' => $task,
-        ]);
+        return TaskResource::make($task);
     }
 
     public function update(
@@ -77,11 +75,10 @@ class TaskController extends Controller
         );
 
         $task->update($request->validated());
-
-        return response()->json([
-            'message' => 'Task updated successfully.',
-            'data' => $task->fresh(),
-        ]);
+        return TaskResource::make($task->fresh())
+            ->additional([
+                'message' => 'Task updated successfully.',
+            ]);
     }
     public function destroy(Request $request, Task $task): JsonResponse
     {

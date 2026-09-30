@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
+use App\Http\Resources\LeadResource;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreLeadRequest;
 use App\Http\Requests\UpdateLeadRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 class LeadController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $leads = Lead::whereIn(
             'organization_id',
@@ -19,10 +21,7 @@ class LeadController extends Controller
         )
             ->latest()
             ->get();
-
-        return response()->json([
-            'data' => $leads,
-        ]);
+        return LeadResource::collection($leads);
     }
 
     public function store(StoreLeadRequest $request): JsonResponse
@@ -42,11 +41,12 @@ class LeadController extends Controller
             ...$validated,
             'created_by' => $request->user()->id,
         ]);
-
-        return response()->json([
-            'message' => 'Lead created successfully.',
-            'data' => $lead,
-        ], 201);
+        return LeadResource::make($lead)
+            ->additional([
+                'message' => 'Lead created successfully.',
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Lead $lead): JsonResponse
@@ -59,10 +59,7 @@ class LeadController extends Controller
             403,
             'You do not have access to this lead.'
         );
-
-        return response()->json([
-            'data' => $lead,
-        ]);
+        return LeadResource::make($lead);
     }
 
     public function update(
@@ -79,11 +76,10 @@ class LeadController extends Controller
         );
 
         $lead->update($request->validated());
-
-        return response()->json([
-            'message' => 'Lead updated successfully.',
-            'data' => $lead->fresh(),
-        ]);
+        return LeadResource::make($lead->fresh())
+            ->additional([
+                'message' => 'Lead updated successfully.',
+            ]);
     }
     public function destroy(Request $request, Lead $lead): JsonResponse
     {

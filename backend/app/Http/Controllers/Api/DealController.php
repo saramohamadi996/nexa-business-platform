@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreDealRequest;
+use App\Http\Requests\UpdateDealRequest;
 use App\Models\Deal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\DealResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class DealController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $deals = Deal::whereIn(
             'organization_id',
@@ -17,10 +21,7 @@ class DealController extends Controller
         )
             ->latest()
             ->get();
-
-        return response()->json([
-            'data' => $deals,
-        ]);
+        return DealResource::collection($deals);
     }
 
     public function store(StoreDealRequest $request): JsonResponse
@@ -40,11 +41,12 @@ class DealController extends Controller
             ...$validated,
             'created_by' => $request->user()->id,
         ]);
-
-        return response()->json([
-            'message' => 'Deal created successfully.',
-            'data' => $deal,
-        ], 201);
+        return DealResource::make($deal)
+            ->additional([
+                'message' => 'Deal created successfully.',
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
     public function show(Request $request, Deal $deal): JsonResponse
     {
@@ -56,10 +58,7 @@ class DealController extends Controller
             403,
             'You do not have access to this deal.'
         );
-
-        return response()->json([
-            'data' => $deal,
-        ]);
+        return DealResource::make($deal);
     }
 
     public function update(
@@ -76,11 +75,10 @@ class DealController extends Controller
         );
 
         $deal->update($request->validated());
-
-        return response()->json([
-            'message' => 'Deal updated successfully.',
-            'data' => $deal->fresh(),
-        ]);
+        return DealResource::make($deal->fresh())
+            ->additional([
+                'message' => 'Deal updated successfully.',
+            ]);
     }
     public function destroy(Request $request, Deal $deal): JsonResponse
     {

@@ -29,13 +29,9 @@ class DashboardController extends Controller
         );
 
         $customers = Customer::where('organization_id', $organizationId);
-
         $leads = Lead::where('organization_id', $organizationId);
-
         $deals = Deal::where('organization_id', $organizationId);
-
         $tasks = Task::where('organization_id', $organizationId);
-
         $activities = Activity::where('organization_id', $organizationId);
 
         return response()->json([
