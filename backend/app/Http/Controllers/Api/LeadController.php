@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,7 +49,29 @@ class LeadController extends Controller
             403,
             'You do not have access to this organization.'
         );
+        if (isset($validated['assigned_to'])) {
+            abort_unless(
+                $request->user()
+                    ->organizations()
+                    ->whereKey($validated['organization_id'])
+                    ->whereHas('users', function ($query) use ($validated) {
+                        $query->whereKey($validated['assigned_to']);
+                    })
+                    ->exists(),
+                422,
+                'The assigned user does not belong to this organization.'
+            );
+        }
 
+        if (isset($validated['converted_customer_id'])) {
+            abort_unless(
+                Customer::whereKey($validated['converted_customer_id'])
+                    ->where('organization_id', $validated['organization_id'])
+                    ->exists(),
+                422,
+                'The selected customer does not belong to this organization.'
+            );
+        }
         $lead = Lead::create([
             ...$validated,
             'created_by' => $request->user()->id,

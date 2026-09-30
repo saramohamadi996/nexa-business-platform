@@ -23,6 +23,15 @@ class OrganizationController extends Controller
 
     public function show(Request $request, Organization $organization): JsonResponse
     {
+        abort_unless(
+            $request->user()
+                ->organizations()
+                ->whereKey($organization->id)
+                ->exists(),
+            403,
+            'You do not have access to this organization.'
+        );
+
         $organization->load([
             'users',
             'roles',
