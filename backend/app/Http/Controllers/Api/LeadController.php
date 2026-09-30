@@ -7,7 +7,8 @@ use App\Models\Customer;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\StoreLeadRequest;
+use App\Http\Requests\UpdateLeadRequest;
 class LeadController extends Controller
 {
     public function index(Request $request): JsonResponse
@@ -24,22 +25,9 @@ class LeadController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreLeadRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'organization_id' => ['required', 'integer', 'exists:organizations,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'source' => ['nullable', 'string', 'max:50'],
-            'status' => ['nullable', 'string', 'max:30'],
-            'priority' => ['nullable', 'string', 'max:30'],
-            'estimated_value' => ['nullable', 'numeric', 'min:0'],
-            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
-            'converted_customer_id' => ['nullable', 'integer', 'exists:customers,id'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         abort_unless(
             $request->user()
@@ -49,29 +37,7 @@ class LeadController extends Controller
             403,
             'You do not have access to this organization.'
         );
-        if (isset($validated['assigned_to'])) {
-            abort_unless(
-                $request->user()
-                    ->organizations()
-                    ->whereKey($validated['organization_id'])
-                    ->whereHas('users', function ($query) use ($validated) {
-                        $query->whereKey($validated['assigned_to']);
-                    })
-                    ->exists(),
-                422,
-                'The assigned user does not belong to this organization.'
-            );
-        }
 
-        if (isset($validated['converted_customer_id'])) {
-            abort_unless(
-                Customer::whereKey($validated['converted_customer_id'])
-                    ->where('organization_id', $validated['organization_id'])
-                    ->exists(),
-                422,
-                'The selected customer does not belong to this organization.'
-            );
-        }
         $lead = Lead::create([
             ...$validated,
             'created_by' => $request->user()->id,
@@ -99,8 +65,10 @@ class LeadController extends Controller
         ]);
     }
 
-    public function update(Request $request, Lead $lead): JsonResponse
-    {
+    public function update(
+        UpdateLeadRequest $request,
+        Lead $lead
+    ): JsonResponse {
         abort_unless(
             $request->user()
                 ->organizations()
@@ -110,28 +78,13 @@ class LeadController extends Controller
             'You do not have access to this lead.'
         );
 
-        $validated = $request->validate([
-            'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'source' => ['nullable', 'string', 'max:50'],
-            'status' => ['nullable', 'string', 'max:30'],
-            'priority' => ['nullable', 'string', 'max:30'],
-            'estimated_value' => ['nullable', 'numeric', 'min:0'],
-            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
-            'converted_customer_id' => ['nullable', 'integer', 'exists:customers,id'],
-            'notes' => ['nullable', 'string'],
-        ]);
-
-        $lead->update($validated);
+        $lead->update($request->validated());
 
         return response()->json([
             'message' => 'Lead updated successfully.',
             'data' => $lead->fresh(),
         ]);
     }
-
     public function destroy(Request $request, Lead $lead): JsonResponse
     {
         abort_unless(

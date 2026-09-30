@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 class TaskController extends Controller
 {
     public function index(Request $request): JsonResponse
@@ -23,20 +24,9 @@ class TaskController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'organization_id' => ['required', 'integer', 'exists:organizations,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status' => ['nullable', 'string', 'max:30'],
-            'priority' => ['nullable', 'string', 'max:30'],
-            'due_date' => ['nullable', 'date'],
-            'customer_id' => ['nullable', 'integer', 'exists:customers,id'],
-            'lead_id' => ['nullable', 'integer', 'exists:leads,id'],
-            'deal_id' => ['nullable', 'integer', 'exists:deals,id'],
-            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
-        ]);
+        $validated = $request->validated();
 
         abort_unless(
             $request->user()
@@ -57,7 +47,6 @@ class TaskController extends Controller
             'data' => $task,
         ], 201);
     }
-
     public function show(Request $request, Task $task): JsonResponse
     {
         abort_unless(
@@ -74,8 +63,10 @@ class TaskController extends Controller
         ]);
     }
 
-    public function update(Request $request, Task $task): JsonResponse
-    {
+    public function update(
+        UpdateTaskRequest $request,
+        Task $task
+    ): JsonResponse {
         abort_unless(
             $request->user()
                 ->organizations()
@@ -85,26 +76,13 @@ class TaskController extends Controller
             'You do not have access to this task.'
         );
 
-        $validated = $request->validate([
-            'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status' => ['nullable', 'string', 'max:30'],
-            'priority' => ['nullable', 'string', 'max:30'],
-            'due_date' => ['nullable', 'date'],
-            'customer_id' => ['nullable', 'integer', 'exists:customers,id'],
-            'lead_id' => ['nullable', 'integer', 'exists:leads,id'],
-            'deal_id' => ['nullable', 'integer', 'exists:deals,id'],
-            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
-        ]);
-
-        $task->update($validated);
+        $task->update($request->validated());
 
         return response()->json([
             'message' => 'Task updated successfully.',
             'data' => $task->fresh(),
         ]);
     }
-
     public function destroy(Request $request, Task $task): JsonResponse
     {
         abort_unless(

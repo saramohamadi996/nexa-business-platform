@@ -23,21 +23,9 @@ class DealController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreDealRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'organization_id' => ['required', 'integer', 'exists:organizations,id'],
-            'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'lead_id' => ['nullable', 'integer', 'exists:leads,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'value' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'max:10'],
-            'stage' => ['nullable', 'string', 'max:30'],
-            'probability' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'expected_close_date' => ['nullable', 'date'],
-            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
-        ]);
+        $validated = $request->validated();
 
         abort_unless(
             $request->user()
@@ -58,7 +46,6 @@ class DealController extends Controller
             'data' => $deal,
         ], 201);
     }
-
     public function show(Request $request, Deal $deal): JsonResponse
     {
         abort_unless(
@@ -75,8 +62,10 @@ class DealController extends Controller
         ]);
     }
 
-    public function update(Request $request, Deal $deal): JsonResponse
-    {
+    public function update(
+        UpdateDealRequest $request,
+        Deal $deal
+    ): JsonResponse {
         abort_unless(
             $request->user()
                 ->organizations()
@@ -86,27 +75,13 @@ class DealController extends Controller
             'You do not have access to this deal.'
         );
 
-        $validated = $request->validate([
-            'customer_id' => ['sometimes', 'required', 'integer', 'exists:customers,id'],
-            'lead_id' => ['nullable', 'integer', 'exists:leads,id'],
-            'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'value' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'max:10'],
-            'stage' => ['nullable', 'string', 'max:30'],
-            'probability' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'expected_close_date' => ['nullable', 'date'],
-            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
-        ]);
-
-        $deal->update($validated);
+        $deal->update($request->validated());
 
         return response()->json([
             'message' => 'Deal updated successfully.',
             'data' => $deal->fresh(),
         ]);
     }
-
     public function destroy(Request $request, Deal $deal): JsonResponse
     {
         abort_unless(
