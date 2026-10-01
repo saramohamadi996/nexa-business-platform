@@ -18,9 +18,7 @@ class DealController extends Controller
         $deals = Deal::whereIn(
             'organization_id',
             $request->user()->organizations()->pluck('organizations.id')
-        )
-            ->latest()
-            ->get();
+        )->latest()->get();
         return DealResource::collection($deals);
     }
 
@@ -45,31 +43,23 @@ class DealController extends Controller
             ->additional([
                 'message' => 'Deal created successfully.',
             ])
-            ->response()
-            ->setStatusCode(201);
+            ->response()->setStatusCode(201);
     }
+
     public function show(Request $request, Deal $deal): JsonResponse
     {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($deal->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($deal->organization_id)->exists(),
             403,
             'You do not have access to this deal.'
         );
         return DealResource::make($deal);
     }
 
-    public function update(
-        UpdateDealRequest $request,
-        Deal $deal
-    ): JsonResponse {
+    public function update(UpdateDealRequest $request, Deal $deal): JsonResponse
+    {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($deal->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($deal->organization_id)->exists(),
             403,
             'You do not have access to this deal.'
         );
@@ -80,19 +70,15 @@ class DealController extends Controller
                 'message' => 'Deal updated successfully.',
             ]);
     }
+
     public function destroy(Request $request, Deal $deal): JsonResponse
     {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($deal->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($deal->organization_id)->exists(),
             403,
             'You do not have access to this deal.'
         );
-
         $deal->delete();
-
         return response()->json([
             'message' => 'Deal deleted successfully.',
         ]);

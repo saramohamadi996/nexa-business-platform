@@ -18,9 +18,7 @@ class LeadController extends Controller
         $leads = Lead::whereIn(
             'organization_id',
             $request->user()->organizations()->pluck('organizations.id')
-        )
-            ->latest()
-            ->get();
+        )->latest()->get();
         return LeadResource::collection($leads);
     }
 
@@ -29,10 +27,7 @@ class LeadController extends Controller
         $validated = $request->validated();
 
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($validated['organization_id'])
-                ->exists(),
+            $request->user()->organizations()->whereKey($validated['organization_id'])->exists(),
             403,
             'You do not have access to this organization.'
         );
@@ -45,32 +40,23 @@ class LeadController extends Controller
             ->additional([
                 'message' => 'Lead created successfully.',
             ])
-            ->response()
-            ->setStatusCode(201);
+            ->response()->setStatusCode(201);
     }
 
     public function show(Request $request, Lead $lead): JsonResponse
     {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($lead->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($lead->organization_id)->exists(),
             403,
             'You do not have access to this lead.'
         );
         return LeadResource::make($lead);
     }
 
-    public function update(
-        UpdateLeadRequest $request,
-        Lead $lead
-    ): JsonResponse {
+    public function update(UpdateLeadRequest $request, Lead $lead): JsonResponse
+    {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($lead->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($lead->organization_id)->exists(),
             403,
             'You do not have access to this lead.'
         );
@@ -81,19 +67,15 @@ class LeadController extends Controller
                 'message' => 'Lead updated successfully.',
             ]);
     }
+
     public function destroy(Request $request, Lead $lead): JsonResponse
     {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($lead->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($lead->organization_id)->exists(),
             403,
             'You do not have access to this lead.'
         );
-
         $lead->delete();
-
         return response()->json([
             'message' => 'Lead deleted successfully.',
         ]);

@@ -18,9 +18,7 @@ class TaskController extends Controller
         $tasks = Task::whereIn(
             'organization_id',
             $request->user()->organizations()->pluck('organizations.id')
-        )
-            ->latest()
-            ->get();
+        )->latest()->get();
         return TaskResource::collection($tasks);
     }
 
@@ -29,10 +27,7 @@ class TaskController extends Controller
         $validated = $request->validated();
 
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($validated['organization_id'])
-                ->exists(),
+            $request->user()->organizations()->whereKey($validated['organization_id'])->exists(),
             403,
             'You do not have access to this organization.'
         );
@@ -44,55 +39,41 @@ class TaskController extends Controller
         return TaskResource::make($task)
             ->additional([
                 'message' => 'Task created successfully.',
-            ])
-            ->response()
-            ->setStatusCode(201);
+            ])->response()->setStatusCode(201);
     }
+
     public function show(Request $request, Task $task): JsonResponse
     {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($task->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($task->organization_id)->exists(),
             403,
             'You do not have access to this task.'
         );
         return TaskResource::make($task);
     }
 
-    public function update(
-        UpdateTaskRequest $request,
-        Task $task
-    ): JsonResponse {
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
+    {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($task->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($task->organization_id)->exists(),
             403,
             'You do not have access to this task.'
         );
-
         $task->update($request->validated());
         return TaskResource::make($task->fresh())
             ->additional([
                 'message' => 'Task updated successfully.',
             ]);
     }
+
     public function destroy(Request $request, Task $task): JsonResponse
     {
         abort_unless(
-            $request->user()
-                ->organizations()
-                ->whereKey($task->organization_id)
-                ->exists(),
+            $request->user()->organizations()->whereKey($task->organization_id)->exists(),
             403,
             'You do not have access to this task.'
         );
-
         $task->delete();
-
         return response()->json([
             'message' => 'Task deleted successfully.',
         ]);
