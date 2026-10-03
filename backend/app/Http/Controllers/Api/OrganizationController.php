@@ -19,7 +19,7 @@ class OrganizationController extends Controller
         return OrganizationResource::collection($organizations);
     }
 
-    public function show(Request $request, Organization $organization): JsonResponse
+    public function show(Request $request, Organization $organization)
     {
         abort_unless(
             $request->user()->organizations()->whereKey($organization->id)->exists(),

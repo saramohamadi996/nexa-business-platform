@@ -22,7 +22,7 @@ class ActivityController extends Controller
             403,
             'You do not have access to this organization.'
         );
-        $activities = Activity::where('organization_id', $organizationId)->with('user')->latest()->get();
+        $activities = Activity::where('organization_id', $organizationId)->with('user')->latest()->paginate(20);;
         return ActivityResource::collection($activities);
     }
 

@@ -28,7 +28,7 @@ class TeamController extends Controller
 
         $organization = Organization::findOrFail($organizationId);
         $members = $organization->users()
-            ->withPivot('role_id', 'joined_at')->with('organizations')->get();
+            ->withPivot('role_id', 'joined_at')->with('organizations')->paginate(20);
 
         return response()->json([
             'data' => $members,

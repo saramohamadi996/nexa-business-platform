@@ -18,7 +18,7 @@ class DealController extends Controller
         $deals = Deal::whereIn(
             'organization_id',
             $request->user()->organizations()->pluck('organizations.id')
-        )->latest()->get();
+        )->latest()->paginate(20);
         return DealResource::collection($deals);
     }
 

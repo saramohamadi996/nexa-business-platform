@@ -18,7 +18,7 @@ class TaskController extends Controller
         $tasks = Task::whereIn(
             'organization_id',
             $request->user()->organizations()->pluck('organizations.id')
-        )->latest()->get();
+        )->latest()->paginate(20);
         return TaskResource::collection($tasks);
     }
 

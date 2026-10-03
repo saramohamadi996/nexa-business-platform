@@ -18,7 +18,7 @@ class LeadController extends Controller
         $leads = Lead::whereIn(
             'organization_id',
             $request->user()->organizations()->pluck('organizations.id')
-        )->latest()->get();
+        )->latest()->paginate(20);
         return LeadResource::collection($leads);
     }
 

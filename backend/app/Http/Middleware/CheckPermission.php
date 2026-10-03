@@ -55,14 +55,13 @@ class CheckPermission
 
     private function resolveOrganizationId(Request $request): ?int
     {
-        // Query string / request body
-        $organizationId = $request->input('organization_id');
+        $organizationId = $request->header('X-Organization-Id')
+            ?? $request->input('organization_id');
 
         if ($organizationId) {
             return (int) $organizationId;
         }
 
-        // Route model binding
         foreach ($request->route()->parameters() as $parameter) {
             if (
                 is_object($parameter)

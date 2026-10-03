@@ -15,7 +15,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        $customers = $request->user()->customers()->latest()->get();
+        $customers = $request->user()->customers()->latest()->paginate(20);
         return CustomerResource::collection($customers);
     }
 

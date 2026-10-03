@@ -16,7 +16,7 @@ class NotificationController extends Controller
             'data' => [
                 'unread_count' => $user->unreadNotifications()->count(),
                 'notifications' => NotificationResource::collection(
-                    $user->notifications()->latest()->get()
+                    $user->notifications()->latest()->paginate(20)
                 ),
             ],
         ]);
