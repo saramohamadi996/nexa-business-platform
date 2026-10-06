@@ -62,15 +62,8 @@ class CheckPermission
             return (int) $organizationId;
         }
 
-        foreach ($request->route()->parameters() as $parameter) {
-            if (
-                is_object($parameter)
-                && isset($parameter->organization_id)
-            ) {
-                return (int) $parameter->organization_id;
-            }
-        }
-
-        return null;
+        return $request->user()
+            ->organizations()
+            ->value('organizations.id');
     }
 }

@@ -20,7 +20,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
         })
     },
     clearAuth: () => {
-        localStorage.removeItem('nexa_toke')
+        localStorage.removeItem('nexa_token')
+
         set({
             user: null,
             token: null,

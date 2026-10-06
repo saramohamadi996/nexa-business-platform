@@ -8,13 +8,12 @@ class StoreCustomerRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->organizations()->whereKey($this->organization_id)->exists();
+        return $this->user()->organizations()->exists();
     }
 
     public function rules(): array
     {
         return [
-            'organization_id' => ['required', 'integer', 'exists:organizations,id'],
             'name' => ['required', 'string', 'max:255'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],

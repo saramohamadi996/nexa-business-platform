@@ -21,13 +21,19 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request): JsonResponse
     {
+        $organizationId = $request->header('X-Organization-Id')
+            ?? $request->user()->organizations()->value('organizations.id');
+
         $customer = Customer::create([
             ...$request->validated(),
+            'organization_id' => $organizationId,
             'created_by' => $request->user()->id,
         ]);
+
         return CustomerResource::make($customer)
             ->additional(['message' => 'Customer created successfully.'])
-            ->response()->setStatusCode(201);
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Customer $customer): JsonResponse

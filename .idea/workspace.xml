@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="87e07919-0c62-462f-b35a-aa872d272398" name="Changes" comment="" />
+    <list default="true" id="87e07919-0c62-462f-b35a-aa872d272398" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/api/leadApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/customers/CustomerForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/leads/LeadForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/leads/LeadsPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/types/lead.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/laravel-idea.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/laravel-idea.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/Http/Controllers/Api/CustomerController.php" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/Http/Controllers/Api/CustomerController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/Http/Middleware/CheckPermission.php" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/Http/Middleware/CheckPermission.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/Http/Requests/StoreCustomerRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/Http/Requests/StoreCustomerRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/customerApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/customerApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/customers/CustomersPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/customers/CustomersPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/stores/authStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/stores/authStore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/types/customer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/customer.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -146,7 +161,10 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/sara/Desktop/project/nexa&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/sara/Desktop/project/nexa/frontend/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -185,6 +203,10 @@
       <workItem from="1790751659981" duration="1814000" />
       <workItem from="1790753510702" duration="8000" />
       <workItem from="1790863661141" duration="59000" />
+      <workItem from="1791010437401" duration="13987000" />
+      <workItem from="1791092652821" duration="14117000" />
+      <workItem from="1791207367517" duration="1860000" />
+      <workItem from="1791265764624" duration="2220000" />
     </task>
     <servers />
   </component>
