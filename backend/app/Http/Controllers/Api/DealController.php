@@ -56,7 +56,7 @@ class DealController extends Controller
         return DealResource::make($deal);
     }
 
-    public function update(UpdateDealRequest $request, Deal $deal): JsonResponse
+    public function update(UpdateDealRequest $request, Deal $deal)
     {
         abort_unless(
             $request->user()->organizations()->whereKey($deal->organization_id)->exists(),

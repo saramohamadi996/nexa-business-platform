@@ -56,7 +56,6 @@ class UpdateTaskRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:users,id',
-                new BelongsToOrganization(User::class, $organizationId),
             ],
         ];
     }

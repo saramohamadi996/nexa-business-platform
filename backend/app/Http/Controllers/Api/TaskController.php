@@ -52,7 +52,7 @@ class TaskController extends Controller
         return TaskResource::make($task);
     }
 
-    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task)
     {
         abort_unless(
             $request->user()->organizations()->whereKey($task->organization_id)->exists(),

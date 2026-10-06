@@ -15,9 +15,16 @@ class StoreDealRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'organization_id' => $this->header('X-Organization-Id'),
+        ]);
+    }
+
     public function rules(): array
     {
-        $organizationId = (int) $this->input('organization_id');
+        $organizationId = (int)$this->input('organization_id');
 
         return [
             'organization_id' => [

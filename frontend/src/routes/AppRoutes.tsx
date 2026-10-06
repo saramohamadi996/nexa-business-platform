@@ -9,6 +9,8 @@ import SalesOverview from '../components/dashboard/SalesOverview'
 import UpcomingTasks from '../components/dashboard/UpcomingTasks'
 import CustomersPage from '../pages/customers/CustomersPage'
 import LeadsPage from '../pages/leads/LeadsPage'
+import DealsPage from '../pages/deals/DealsPage'
+import TasksPage from '../pages/tasks/TasksPage'
 function DashboardPage() {
     return (
         <div className="space-y-6">
@@ -23,37 +25,10 @@ function DashboardPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard
-                    title="Customers"
-                    value="1,248"
-                    change="+12.5%"
-                    changeType="positive"
-                    icon="◉"
-                />
-
-                <StatCard
-                    title="Leads"
-                    value="86"
-                    change="+8.2%"
-                    changeType="positive"
-                    icon="◎"
-                />
-
-                <StatCard
-                    title="Deals"
-                    value="$42,580"
-                    change="+18.4%"
-                    changeType="positive"
-                    icon="◇"
-                />
-
-                <StatCard
-                    title="Tasks"
-                    value="24"
-                    change="6 pending"
-                    changeType="neutral"
-                    icon="✓"
-                />
+                <StatCard title="Customers" value="1,248" change="+12.5%" changeType="positive" icon="◉"/>
+                <StatCard title="Leads" value="86" change="+8.2%" changeType="positive" icon="◎"/>
+                <StatCard title="Deals" value="$42,580" change="+18.4%" changeType="positive" icon="◇"/>
+                <StatCard title="Tasks" value="24" change="6 pending" changeType="neutral" icon="✓"/>
             </div>
             <SalesOverview />
 
@@ -78,6 +53,8 @@ export default function AppRoutes() {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/customers" element={<CustomersPage />} />
                         <Route path="/leads" element={<LeadsPage />} />
+                        <Route path="/deals" element={<DealsPage />} />
+                        <Route path="/tasks" element={<TasksPage />} />
                     </Route>
                 </Route>
 
