@@ -8,7 +8,7 @@ import RecentDeals from '../components/dashboard/RecentDeals'
 import SalesOverview from '../components/dashboard/SalesOverview'
 import UpcomingTasks from '../components/dashboard/UpcomingTasks'
 import CustomersPage from '../pages/customers/CustomersPage'
-
+import LeadsPage from '../pages/leads/LeadsPage'
 function DashboardPage() {
     return (
         <div className="space-y-6">
@@ -61,7 +61,6 @@ function DashboardPage() {
                 <RecentLeads />
                 <UpcomingTasks />
             </div>
-
             <RecentDeals />
 
         </div>
@@ -78,6 +77,7 @@ export default function AppRoutes() {
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/customers" element={<CustomersPage />} />
+                        <Route path="/leads" element={<LeadsPage />} />
                     </Route>
                 </Route>
 

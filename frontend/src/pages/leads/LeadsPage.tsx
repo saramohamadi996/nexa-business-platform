@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { leadApi } from '../../api/leadApi'
 import type { Lead } from '../../types/lead'
-
+import LeadForm from './LeadForm'
 export default function LeadsPage() {
     const [leads, setLeads] = useState<Lead[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -10,7 +10,13 @@ export default function LeadsPage() {
     const [search, setSearch] = useState('')
     const [total, setTotal] = useState(0)
     const [lastPage, setLastPage] = useState(1)
-
+    const [isCreateOpen, setIsCreateOpen] = useState(false)
+    const [isCreating, setIsCreating] = useState(false)
+    const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [refreshKey, setRefreshKey] = useState(0)
+    const [editingLead, setEditingLead] = useState<Lead | null>(null)
+    const [isUpdating, setIsUpdating] = useState(false)
+    const [deletingLeadId, setDeletingLeadId] = useState<number | null>(null)
     useEffect(() => {
         const loadLeads = async () => {
             try {
@@ -33,8 +39,70 @@ export default function LeadsPage() {
         }
 
         loadLeads()
-    }, [page, search])
+    }, [page, search, refreshKey])
+    const handleCreateLead = async (
+        data: Parameters<React.ComponentProps<typeof LeadForm>['onSubmit']>[0],
+    ) => {
+        try {
+            setIsCreating(true)
+            setError(null)
+            setSuccessMessage(null)
 
+            await leadApi.create(data)
+
+            setIsCreateOpen(false)
+            setSuccessMessage('Lead created successfully.')
+            setRefreshKey((current) => current + 1)
+            setPage(1)
+        } catch {
+            setError('Failed to create lead.')
+        } finally {
+            setIsCreating(false)
+        }
+    }
+    const handleUpdateLead = async (
+        data: Parameters<React.ComponentProps<typeof LeadForm>['onSubmit']>[0],
+    ) => {
+        if (!editingLead) {
+            return
+        }
+
+        try {
+            setIsUpdating(true)
+            setError(null)
+            setSuccessMessage(null)
+
+            await leadApi.update(editingLead.id, data)
+
+            setEditingLead(null)
+            setSuccessMessage('Lead updated successfully.')
+            setRefreshKey((current) => current + 1)
+        } catch {
+            setError('Failed to update lead.')
+        } finally {
+            setIsUpdating(false)
+        }
+    }
+    const handleDeleteLead = async (id: number) => {
+        if (!window.confirm('Are you sure you want to delete this lead?')) {
+            return
+        }
+
+        try {
+            setDeletingLeadId(id)
+            setError(null)
+            setSuccessMessage(null)
+
+            await leadApi.delete(id)
+
+            setSuccessMessage('Lead deleted successfully.')
+            setRefreshKey((current) => current + 1)
+        } catch {
+            setError('Failed to delete lead.')
+        } finally {
+            setDeletingLeadId(null)
+        }
+    }
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -46,6 +114,14 @@ export default function LeadsPage() {
                         Manage your leads.
                     </p>
                 </div>
+
+                <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                >
+                    Add Lead
+                </button>
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -66,7 +142,72 @@ export default function LeadsPage() {
                     {error}
                 </div>
             )}
+            {successMessage && (
+                <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+                    {successMessage}
+                </div>
+            )}
+            {isCreateOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="text-lg font-semibold text-gray-900">
+                                Create Lead
+                            </h2>
 
+                            <button
+                                type="button"
+                                onClick={() => setIsCreateOpen(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <LeadForm
+                            onSubmit={handleCreateLead}
+                            onCancel={() => setIsCreateOpen(false)}
+                            isSubmitting={isCreating}
+                        />
+                    </div>
+                </div>
+            )}
+            {editingLead && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="text-lg font-semibold text-gray-900">
+                                Edit Lead
+                            </h2>
+
+                            <button
+                                type="button"
+                                onClick={() => setEditingLead(null)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <LeadForm
+                            key={editingLead.id}
+                            initialData={{
+                                name: editingLead.name,
+                                company_name: editingLead.company_name ?? '',
+                                email: editingLead.email ?? '',
+                                phone: editingLead.phone ?? '',
+                                source: editingLead.source ?? '',
+                                status: editingLead.status,
+                                notes: editingLead.notes ?? '',
+                            }}
+                            isEditing
+                            onSubmit={handleUpdateLead}
+                            onCancel={() => setEditingLead(null)}
+                            isSubmitting={isUpdating}
+                        />
+                    </div>
+                </div>
+            )}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 {isLoading ? (
                     <div className="p-6 text-sm text-gray-500">
@@ -95,6 +236,9 @@ export default function LeadsPage() {
                             <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-gray-500">
                                 Status
                             </th>
+                            <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                                Actions
+                            </th>
                         </tr>
                         </thead>
 
@@ -115,6 +259,26 @@ export default function LeadsPage() {
                                 </td>
                                 <td className="px-5 py-4 text-sm text-gray-600">
                                     {lead.status}
+                                </td>
+                                <td className="px-5 py-4 text-sm">
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingLead(lead)}
+                                            className="font-medium text-indigo-600 hover:text-indigo-800"
+                                        >
+                                            Edit
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeleteLead(lead.id)}
+                                            disabled={deletingLeadId === lead.id}
+                                            className="font-medium text-red-600 hover:text-red-800 disabled:opacity-50"
+                                        >
+                                            {deletingLeadId === lead.id ? 'Deleting...' : 'Delete'}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

@@ -5,6 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { authApi } from '../../api/authApi'
 import { useAuthStore } from '../../stores/authStore'
 import { useNavigate } from 'react-router-dom'
+import { organizationApi } from '../../api/organizationApi'
+import { useOrganizationStore } from '../../stores/organizationStore'
 
 const loginSchema = z.object({
     email: z.string().email('Please enter a valid email address.'),
@@ -17,6 +19,9 @@ export default function LoginPage() {
     const [serverError, setServerError] = useState<string | null>(null)
 
     const setAuth = useAuthStore((state) => state.setAuth)
+    const setOrganizationId = useOrganizationStore(
+        (state) => state.setOrganizationId,
+    )
     const navigate = useNavigate()
 
     const {
@@ -34,8 +39,24 @@ export default function LoginPage() {
             const response = await authApi.login(data)
 
             setAuth(response.user, response.token)
-            navigate('/dashboard')
 
+            const organizations = await organizationApi.list()
+
+            if (organizations.length === 0) {
+                throw new Error('No organization available.')
+            }
+
+            setOrganizationId(organizations[0].id)
+            console.log(
+                'Selected organization:',
+                organizations[0].id,
+            )
+
+            console.log(
+                'Stored organization:',
+                localStorage.getItem('nexa_organization_id'),
+            )
+            navigate('/dashboard')
             console.log('Login successful:', response.user)
         } catch (error: any) {
             setServerError(

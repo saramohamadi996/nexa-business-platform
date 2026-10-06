@@ -53,7 +53,7 @@ class LeadController extends Controller
         return LeadResource::make($lead);
     }
 
-    public function update(UpdateLeadRequest $request, Lead $lead): JsonResponse
+    public function update(UpdateLeadRequest $request, Lead $lead)
     {
         abort_unless(
             $request->user()->organizations()->whereKey($lead->organization_id)->exists(),

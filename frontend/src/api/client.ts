@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { useOrganizationStore } from '../stores/organizationStore'
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
@@ -9,7 +9,7 @@ export const api = axios.create({
 })
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('nexa_token')
-    const organizationId = localStorage.getItem('nexa_organization_id')
+    const organizationId = useOrganizationStore.getState().organizationId
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`

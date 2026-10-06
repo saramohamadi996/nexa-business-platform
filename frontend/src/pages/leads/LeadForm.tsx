@@ -18,12 +18,16 @@ interface LeadFormProps {
     onSubmit: (data: LeadFormData) => Promise<void>
     onCancel: () => void
     isSubmitting: boolean
+    initialData?: LeadFormData
+    isEditing?: boolean
 }
 
 export default function LeadForm({
                                      onSubmit,
                                      onCancel,
                                      isSubmitting,
+                                     initialData,
+                                     isEditing = false,
                                  }: LeadFormProps) {
     const {
         register,
@@ -31,11 +35,10 @@ export default function LeadForm({
         formState: { errors },
     } = useForm<LeadFormData>({
         resolver: zodResolver(leadSchema),
-        defaultValues: {
+        defaultValues: initialData ?? {
             status: 'new',
         },
     })
-
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
@@ -138,7 +141,9 @@ export default function LeadForm({
                     disabled={isSubmitting}
                     className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                 >
-                    {isSubmitting ? 'Creating...' : 'Create Lead'}
+                    {isSubmitting
+                    ? isEditing ? 'Updating...' : 'Creating...'
+                    : isEditing ? 'Update Lead' : 'Create Lead'}
                 </button>
             </div>
         </form>
