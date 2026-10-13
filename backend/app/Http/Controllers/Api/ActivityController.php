@@ -14,9 +14,14 @@ class ActivityController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        $organizationId = $request->validate([
-            'organization_id' => ['required', 'integer', 'exists:organizations,id'],
-        ])['organization_id'];
+        $organizationId = (int) $request->header('X-Organization-Id');
+
+        abort_unless(
+            $organizationId,
+            422,
+            'Organization could not be determined.'
+        );
+
         abort_unless(
             $request->user()->organizations()->whereKey($organizationId)->exists(),
             403,

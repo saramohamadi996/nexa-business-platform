@@ -36,7 +36,7 @@ class UpdateLeadRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:users,id',
-                new BelongsToOrganization(User::class, $organizationId),
+//                new BelongsToOrganization(User::class, $organizationId),
             ],
 
             'converted_customer_id' => [

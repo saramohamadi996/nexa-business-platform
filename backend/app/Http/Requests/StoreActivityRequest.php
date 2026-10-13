@@ -12,6 +12,13 @@ class StoreActivityRequest extends FormRequest
         return $this->user()->organizations()->whereKey($this->organization_id)->exists();
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'organization_id' => $this->header('X-Organization-Id'),
+        ]);
+    }
+
     public function rules(): array
     {
         return [

@@ -51,7 +51,7 @@ class UpdateDealRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:users,id',
-                new BelongsToOrganization(User::class, $organizationId),
+//                new BelongsToOrganization(User::class, $organizationId),
             ],
         ];
     }

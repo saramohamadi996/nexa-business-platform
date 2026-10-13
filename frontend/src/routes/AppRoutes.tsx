@@ -11,6 +11,9 @@ import CustomersPage from '../pages/customers/CustomersPage'
 import LeadsPage from '../pages/leads/LeadsPage'
 import DealsPage from '../pages/deals/DealsPage'
 import TasksPage from '../pages/tasks/TasksPage'
+import ActivitiesPage from '../pages/activities/ActivitiesPage'
+import NotificationsPage from '../pages/notifications/NotificationsPage'
+import TeamPage from '../pages/team/TeamPage'
 function DashboardPage() {
     return (
         <div className="space-y-6">
@@ -55,6 +58,9 @@ export default function AppRoutes() {
                         <Route path="/leads" element={<LeadsPage />} />
                         <Route path="/deals" element={<DealsPage />} />
                         <Route path="/tasks" element={<TasksPage />} />
+                        <Route path="/activities" element={<ActivitiesPage />} />
+                        <Route path="/notifications" element={<NotificationsPage />} />
+                        <Route path="/team" element={<TeamPage />} />
                     </Route>
                 </Route>
 

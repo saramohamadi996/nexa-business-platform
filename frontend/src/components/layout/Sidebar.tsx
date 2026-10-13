@@ -6,6 +6,8 @@ const navigation = [
     { name: 'Leads', path: '/leads', icon: '◎' },
     { name: 'Deals', path: '/deals', icon: '◇' },
     { name: 'Tasks', path: '/tasks', icon: '✓' },
+    { name: 'Activities', path: '/activities', icon: '◷' },
+    { name: 'Notifications', path: '/notifications', icon: '●' },
     { name: 'Team', path: '/team', icon: '◌' },
 ]
 
